@@ -1,32 +1,24 @@
--- File: prep_weather_daily.sql
 
-WITH daily_data AS (
-    SELECT * 
-    FROM {{ ref('staging_weather_daily') }}
+
+WITH daily_data AS (SELECT *
+		,DATE_PART('day', date) AS date_day 		-- number of the day of month
+		,DATE_PART('month', date) AS date_month 	-- number of the month of year
+		,DATE_PART('year', date) AS date_year 		-- number of year
+		,DATE_PART('week', date) AS cw 			-- number of the week of year
+		,TO_CHAR(date, 'FMMonth') AS month_name 	-- name of the month
+		,TO_CHAR(date, 'FMDay') AS weekday 		-- name of the weekday
+    FROM staging_weather_daily
 ),
-
-add_features AS (
-    SELECT *
-        , DATE_PART('day', date) AS date_day          -- number of the day of month
-        , DATE_PART('month', date) AS date_month      -- number of the month of year
-        , DATE_PART('year', date) AS date_year        -- number of the year
-        , DATE_PART('week', date) AS cw               -- calendar week number
-        , TO_CHAR(date, 'Month') AS month_name        -- full month name
-        , TO_CHAR(date, 'Day') AS weekday             -- full weekday name
-    FROM daily_data
-),
-
 add_more_features AS (
     SELECT *
-        , CASE 
-            WHEN DATE_PART('month', date) IN (12, 1, 2) THEN 'winter'
-            WHEN DATE_PART('month', date) IN (3, 4, 5) THEN 'spring'
-            WHEN DATE_PART('month', date) IN (6, 7, 8) THEN 'summer'
-            WHEN DATE_PART('month', date) IN (9, 10, 11) THEN 'autumn'
-          END AS season
-    FROM add_features
+, (CASE 
+			WHEN month_name IN ('November', 'December', 'January') THEN 'winter'
+            WHEN month_name IN ('February', 'March', 'May') THEN 'spring'
+            WHEN month_name IN ('April', 'June', 'July') THEN 'summer'
+            WHEN month_name IN ('August', 'September', 'October') THEN 'autumn'
+		END) AS season
+    FROM daily_data
 )
-
 SELECT *
 FROM add_more_features
-ORDER BY date;
+ORDER BY date
