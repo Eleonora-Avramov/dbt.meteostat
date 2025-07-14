@@ -5,7 +5,7 @@ WITH hourly_data AS (
 add_features AS (
     SELECT *
 		, timestamp::DATE AS date               -- only date (hours:minutes:seconds) as DATE data type
-		, timestamp AS time                           -- only time (hours:minutes:seconds) as TIME data type
+		, timestamp::AS time                           -- only time (hours:minutes:seconds) as TIME data type
         , TO_CHAR(timestamp,'HH24:MI') as hour  -- time (hours:minutes) as TEXT data type
         , TO_CHAR(timestamp, 'FMmonth') AS month_name   -- month name as a TEXT
         , TO_CHAR (timestamp, 'FMday') weekday        -- weekday name as TEXT        
@@ -18,9 +18,9 @@ add_features AS (
 add_more_features AS (
     SELECT *
 		,(CASE 
-			WHEN time >= '23:00:00' OR time < '06:00:00' THEN 'night'
-            WHEN time >= '06:00:00' AND time < '18:00:00' THEN 'day'
-            WHEN time >= '18:00:00' AND time < '23:00:00' THEN 'evening'
+			WHEN time >= '23:00' ::time OR time < '06:00:00' THEN 'night'
+            WHEN time BETWEEN '06:00'::TIME  AND time < '17:59'::time THEN 'day'
+            WHEN time BETWEEN '18:00':: AND time < '22:59':: THEN 'evening'
 		END) AS day_part
     FROM add_features
 )
