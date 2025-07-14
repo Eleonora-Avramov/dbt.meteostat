@@ -1,6 +1,9 @@
-
-
-WITH daily_data AS (SELECT *
+WITH daily_data AS (
+    SELECT * 
+    FROM {{ref('staging_weather_daily')}}
+),
+add_features AS (
+    SELECT *
 		,DATE_PART('day', date) AS date_day 		-- number of the day of month
 		,DATE_PART('month', date) AS date_month 	-- number of the month of year
 		,DATE_PART('year', date) AS date_year 		-- number of year
