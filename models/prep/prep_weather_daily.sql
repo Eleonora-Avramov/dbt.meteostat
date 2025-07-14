@@ -10,7 +10,7 @@ add_features AS (
 		,DATE_PART('week', date) AS cw 			-- number of the week of year
 		,TO_CHAR(date, 'FMMonth') AS month_name 	-- name of the month
 		,TO_CHAR(date, 'FMDay') AS weekday 		-- name of the weekday
-    FROM staging_weather_daily
+    FROM daily_data
 ),
 add_more_features AS (
     SELECT *
@@ -20,7 +20,7 @@ add_more_features AS (
             WHEN month_name IN ('April', 'June', 'July') THEN 'summer'
             WHEN month_name IN ('August', 'September', 'October') THEN 'autumn'
 		END) AS season
-    FROM daily_data
+    FROM add_features
 )
 SELECT *
 FROM add_more_features
