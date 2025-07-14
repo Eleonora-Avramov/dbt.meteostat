@@ -18,12 +18,12 @@ flights_cleaned AS (
            ,origin
            ,dest
            ,air_time
-           ,(air_time * '1 minute'::INTERVAL) AS air_time_interval
+           ,make_interval (mins => air_time_interval) AS air_time_interval
            ,actual_elapsed_time
-           ,(actual_elapsed_time * '1 minute'::INTERVAL) AS actual_elapsed_time_interval
+           ,make_interval (mins => actual_elapsed_time) AS actual_elapsed_time_interval
            ,(distance / 0.621371)::NUMERIC(6,2) AS distance_km
            ,cancelled
            ,diverted
     FROM flights_one_month
 )
-SELECT * FROM flights_cleaned;
+SELECT * FROM flights_cleaned
